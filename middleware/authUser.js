@@ -1,9 +1,8 @@
 import jwt from "jsonwebtoken";
 
-
 const authUser = async (req, res, next) => {
     const {token} = req.cookies;
-    console.log(token);
+    console.log("token : "+token);
     if (!token) {
         return res.json({success: false, message: 'Not Authenticated'});
     }
@@ -11,8 +10,8 @@ const authUser = async (req, res, next) => {
         const tokenDecode = jwt.verify(token, process.env.JWT_SECRET);
         console.log(tokenDecode);
         if (tokenDecode.id) {
-            req.user= tokenDecode.id;
-            console.log(req.user);
+            req.user = tokenDecode.id;
+            console.log("user : "+req.user);
         } else {
             return res.json({success: false, message: 'Not Authenticated'});
         }
