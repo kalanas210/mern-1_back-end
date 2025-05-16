@@ -5,7 +5,6 @@ import connectDB from "./configs/db.js";
 import "dotenv/config";
 import userRouter from "./routes/userRoutes.js";
 import adminRouter from "./routes/adminRoutes.js";
-import connectCloudinary from "./configs/cloudinary.js";
 import productRouter from "./routes/productRoutes.js";
 import cartRouter from "./routes/cartRoutes.js";
 import addressRouter from "./routes/addressRoute.js";
@@ -23,7 +22,7 @@ await cloudinary;
 
 //allow multiple origins
 
-const allowedOrigins = ["http://localhost:5173"];
+const allowedOrigins = ["http://localhost:5173","https://mern-frontend-vert.vercel.app"];
 
 app.post('/stripe',express.raw({type:'application/json'}) , stripeWebHooks)
 

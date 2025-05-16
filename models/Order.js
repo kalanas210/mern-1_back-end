@@ -10,7 +10,7 @@ const orderSchema = new mongoose.Schema({
     address : {type:String , required:true , ref:'address'},
     status : {type:String ,default:"Order Placed" },
     paymentType : {type:String , required:true },
-    ispaid : {type:Boolean , required:true , default: false },
+    ispaid : {type:Boolean , required:true , default: true },
 },{ timestamps: true });
 
 const Order = mongoose.models.order || mongoose.model('Order', orderSchema);

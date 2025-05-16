@@ -1,16 +1,15 @@
 // Place order COD : /api/order.cod
 
-import product from "../models/Product.js";
 import Product from "../models/Product.js";
 import Order from "../models/Order.js";
 import { Stripe } from "stripe";
-import {request, response} from "express";
 import User from "../models/User.js";
 
 export const placeOrderCOD = async (req, res) => {
     try{
 
-        const {userId , items , address} = req.body;
+        const {userId,items , address} = req.body;
+
 
         if(!address){
             return res.json({success:false , message:"No address found"});
@@ -50,13 +49,11 @@ export const placeOrderCOD = async (req, res) => {
 
 export const placeOrderStripe = async (req, res) => {
     try{
-        const {userId, items, address} = req.body;
+        const {userId,items , address} = req.body;
         const {origin} = req.headers;
 
-        if(!address){
+        if(!address || items.length === 0){
             return res.json({success:false, message:"No address found"});
-        } else if(items.length === 0){
-            return res.json({success:false, message:"No items found"});
         }
 
         let productData = [];
@@ -143,7 +140,7 @@ export const placeOrderStripe = async (req, res) => {
 
 export const stripeWebHooks = async (req, res) => {
     const stripeInstance = new Stripe(process.env.STRIPE_LIVE_KEY);
-    const sig = request.headers["stripe-signature"];
+    const sig = req.headers["stripe-signature"];
     let event;
 
     try{
@@ -153,62 +150,60 @@ export const stripeWebHooks = async (req, res) => {
             process.env.STRIPE_WEBHOOK_SECRET,
         )
     } catch (error) {
-          response.status(400).send(`Webhook error: ${error.message}`);
+        res.status(400).send(`Webhook error: ${error.message}`);
+        return;
     }
-    // Handle the enet
-     switch (event.type) {
-         case "payment_intent.succeeded":{
-             const paymentIntent = event.data.object;
-             const paymentIntentId = paymentIntent.id;
+    
+    // Handle the event
+    switch (event.type) {
+        case "payment_intent.succeeded":{
+            const paymentIntent = event.data.object;
+            const paymentIntentId = paymentIntent.id;
 
-             const session = await stripeInstance.checkout.sessions.list({
-                 payment_intent: paymentIntentId
-             })
-             const {orderId,userId} = session.data[0].metadata;
-             await Order.findByIdAndUpdate(orderId,{isPaid:true})
-             await User.findByIdAndUpdate(userId,{cartItems:{}})
-             break;
-         }
-         case "payment_intent.failed":{
-             const paymentIntent = event.data.object;
-             const paymentIntentId = paymentIntent.id;
+            const session = await stripeInstance.checkout.sessions.list({
+                payment_intent: paymentIntentId
+            });
+            
+            const {orderId, userId} = session.data[0].metadata;
+            await Order.findByIdAndUpdate(orderId, {ispaid: true});
+            await User.findByIdAndUpdate(userId, {cartItems: {}});
+            break;
+        }
+        case "payment_intent.payment_failed":{
+            const paymentIntent = event.data.object;
+            const paymentIntentId = paymentIntent.id;
 
-             const session = await stripeInstance.checkout.sessions.list({
-                 payment_intent: paymentIntentId
-             })
-             const {orderId} = session.data[0].metadata;
-             await Order.findByIdAndDelete(orderId)
-             break;
-         }
-         default:
-             console.error(`Unknown event type ${event.type}`);
-             break;
-     }
-     response.json({received:true})
+            const session = await stripeInstance.checkout.sessions.list({
+                payment_intent: paymentIntentId
+            });
+            
+            const {orderId} = session.data[0].metadata;
+            await Order.findByIdAndDelete(orderId);
+            break;
+        }
+        default:
+            console.error(`Unknown event type ${event.type}`);
+            break;
+    }
+    
+    res.json({received: true});
 
 }
-
-
-
-
 
 // Get Orders by user id
 
 export const getUserOrders = async (req, res) => {
-
-    try{
-
+    try {
         const userId = req.user;
         const orders = await Order.find({
             userId,
-            $or : [{paymentType : "COD"},{isPaid : true}],
+            $or: [{paymentType: "COD"}, {ispaid: true}],
         }).populate('items.product address').sort({createdAt: -1});
 
-        res.json({success:true, orders});
-
+        res.json({success: true, orders});
     } catch (error) {
         console.log(error.message);
-        res.json({success:false , error: error.message});
+        res.json({success: false, error: error.message});
 
     }
 
@@ -217,18 +212,15 @@ export const getUserOrders = async (req, res) => {
 // Get Orders for Admin Dashboard : /api/order/admim
 
 export const getAllOrders = async (req, res) => {
-
-    try{
-
+    try {
         const orders = await Order.find({
-            $or : [{paymentType : "COD"},{isPaid : true}],
+            $or: [{paymentType: "COD"}, {ispaid: true}],
         }).populate('items.product address').sort({createdAt: -1});
 
-        res.json({success:true, orders});
-
+        res.json({success: true, orders});
     } catch (error) {
         console.log(error.message);
-        res.json({success:false , error: error.message});
+        res.json({success: false, error: error.message});
 
     }
 
