@@ -12,9 +12,6 @@
   "license": "ISC",
   "type": "module",
   "dependencies": {
-    "@clerk/clerk-js": "^5.67.1",
-    "@clerk/clerk-react": "^5.31.4",
-    "@clerk/clerk-sdk-node": "^5.1.6",
     "bcryptjs": "^3.0.2",
     "cloudinary": "^2.6.1",
     "cloudinary-core": "^2.13.1",
