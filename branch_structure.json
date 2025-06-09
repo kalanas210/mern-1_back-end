@@ -1,0 +1,18 @@
+{
+  "default_branch": "master",
+  "branches": [
+    "developer",
+    "kalana-se",
+    "master"
+  ],
+  "parent": {
+    "developer": "master",
+    "kalana-se": "master",
+    "master": null
+  },
+  "order": [
+    "master",
+    "developer",
+    "kalana-se"
+  ]
+}
