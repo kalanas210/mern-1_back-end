@@ -2,7 +2,7 @@
 
 import User from "../models/User.js";
 import jwt from "jsonwebtoken";
-import bcrypt from "bcryptjs"; // Changed from 'bcrypt' to 'bcryptjs' for better compatibility
+import bcrypt from "bcryptjs"; // Changed from 'bcrypt' to 'bcryptjs' for better compatibility from
 
 export const register = async(req, res) => {
     try {
@@ -53,7 +53,7 @@ export const login = async(req, res) => {
         }
         const isMatch = await bcrypt.compare(password, user.password);
         if (!isMatch) {
-            return res.json({success: false , message:"Invalid password"});
+            return res.json({success: false , message:"Invalid password"}); // invalid password 
         }
 
         const token = jwt.sign({id:user._id}, process.env.JWT_SECRET, {expiresIn: '1h'});
@@ -64,7 +64,7 @@ export const login = async(req, res) => {
             maxAge: 60 * 60 * 1000,
         });
 
-        return res.json({success: true, user:{email:user.email, name:user.name} });
+        return res.json({success: true, user:{email:user.email, name:user.name} }); // done
 
     } catch (error){
         console.log(error.message);
