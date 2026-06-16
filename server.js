@@ -14,7 +14,7 @@ import {stripeWebHooks} from "./controllers/orderController.js";
 
 const app = express();
 
-const port = process.env.PORT || 4000;
+const port = process.env.PORT || 4000;  // from .env
 
 await connectDB();
 await cloudinary;
