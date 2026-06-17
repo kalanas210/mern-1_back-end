@@ -7,7 +7,7 @@ import userRouter from "./routes/userRoutes.js";
 import adminRouter from "./routes/adminRoutes.js";
 import productRouter from "./routes/productRoutes.js";
 import cartRouter from "./routes/cartRoutes.js";
-import addressRouter from "./routes/addressRoute.js";
+// import addressRouter from "./routes/addressRoute.js";
 import orderRouter from "./routes/orderRoute.js";
 import cloudinary from "./configs/cloudinary.js";
 import {stripeWebHooks} from "./controllers/orderController.js";
@@ -37,7 +37,7 @@ app.use('/api/user',userRouter);
 app.use('/api/admin',adminRouter);
 app.use('/api/product',productRouter);
 app.use('/api/cart',cartRouter);
-app.use('/api/address',addressRouter);
+// app.use('/api/address',addressRouter);
 app.use('/api/order',orderRouter);
 
 
